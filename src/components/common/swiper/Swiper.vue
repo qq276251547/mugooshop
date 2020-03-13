@@ -1,13 +1,17 @@
 <template>
   <div id="swiper-container">
     <!-- 轮播图主展示内容 -->
-    <div class="swiper">
+    <div class="swiper" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd">
       <slot></slot>
     </div>
 
+<!--    <slot name="indicator"></slot>-->
+
     <!-- 轮播图指示器 -->
     <div class="indicator">
-      <slot name="indicator"></slot>
+      <slot name="indicator" v-if="slideCount>1 && showIndicator">
+        <div v-for="(indicator, index) in slideCount" :key="index" class="indi-item" :class="{active: index === currentIndex-1}"></div>
+      </slot>
     </div>
 
 
@@ -26,8 +30,15 @@
       animDuration: {
         type: Number,
         default: 300
+      },
+      showIndicator: {
+        type: Boolean,
+        default: true
+      },
+      swipeRatio: {
+        type: Number,
+        default: 0.3
       }
-
     },
 
     data() {
@@ -36,6 +47,7 @@
         totalWidth: 0,    //全部的轮播图总长度
         swiperStyle: {},  //轮播图样式
         currentIndex: 1,  //默认当前轮播图index=1
+        isMove: false     //是否在滚动中，默认false
       }
     },
 
@@ -43,10 +55,9 @@
       setTimeout(() => {
         //1.当页面创建后，先操作dom生成无限轮播的前后两个slid结点元素
         this.handleDom()
-
+        //2.启动定时器
         this.startTimer()
-
-      }, 1000)
+      }, 100)
     },
 
     methods: {
@@ -66,16 +77,23 @@
         }, this.interval)
       },
 
+      stopTimer(){
+        window.clearInterval(this.playTimer)
+      },
+
       /**
       * 滚动到指定位置
       */
       scrollContent(scrollPosition){
+        this.isMove = true
+
         // 1.开始滚动动画
         this.swiperStyle.transition = 'transform '+ this.animDuration + 'ms';
         this.setTransform(scrollPosition);
 
         this.checkPosition()
 
+        this.isMove = false
       },
 
       /**
@@ -93,10 +111,12 @@
             console.log("aaaaaaaaaa")
             this.currentIndex = 1
             this.setTransform(-this.currentIndex * this.totalWidth)
+          }else if(this.currentIndex <= 0){
+            this.currentIndex = this.slideCount
+            this.setTransform(-this.currentIndex * this.totalWidth)
           }
-
           // 2.结束移动后的回调
-          // this.$emit('transitionEnd', this.currentIndex-1);
+          this.$emit('transitionEnd', this.currentIndex-1);
 
         }, this.animDuration)
       },
@@ -122,18 +142,59 @@
           //将最后一张图拷贝一份插入到dom第一个结点上
           swiperEl.insertBefore(cloneLast, slidesEls[0]);
           //将原第一张图拷贝一份插入到dom最后一个结点上
-          swiperEl.append(cloneFirst)
-
-          this.totalWidth = swiperEl.offsetWidth
-          this.swiperStyle = swiperEl.style
-
+          swiperEl.append(cloneFirst);
+          this.totalWidth = swiperEl.offsetWidth;
+          this.swiperStyle = swiperEl.style;
         }
 
         //设置当前默认轮播图显示为第二张图（即插入slide前的第一张）
-        console.log(this.totalWidth)
-        this.setTransform(-this.totalWidth)
-      }
+        this.setTransform(-this.totalWidth);
+      },
 
+      /**
+       * 轮播图手势切换
+       */
+      touchStart(event){
+        // console.log("start: " + event.touches[0].pageX)
+        // console.log("start clientX: " + event.touches[0].clientX)
+        //如果正在滚动，不允许拖动
+        if (this.isMove) return;
+
+        //停止定时器后计算当前触摸点X坐标
+        this.stopTimer();
+        this.startX = event.touches[0].pageX
+      },
+
+      touchMove(event){
+        // console.log("move: " + event.touches[0].pageX)
+        // console.log("move clientX: " + event.touches[0].clientX)
+        //在滑动时计算移动距离
+        this.currentX = event.touches[0].pageX
+        this.distance = this.currentX - this.startX
+
+        //停止过度动画,进行滑动偏移
+        // this.swiperStyle.transition = 'transform 0ms'
+        this.setTransform(-this.currentIndex * this.totalWidth + this.distance)
+        console.log("distance: " + this.distance)
+
+      },
+
+      touchEnd(event){
+        console.log("touch end")
+        let abs_distance = Math.abs(this.distance)
+        //当触点松开时，需要计算当前偏移距离是否大于设定的滚动比例距离，如果是，则滚动吸附
+        if(this.distance > 0 && abs_distance > this.totalWidth * this.swipeRatio){
+          //往右吸附滑动一图，或吸附回原位置
+          this.currentIndex--
+        }else if(this.distance < 0 && abs_distance > this.totalWidth * this.swipeRatio){
+          //往左吸附滑动一图，或吸附回原位置
+          this.currentIndex++
+        }
+        //滚动到新吸附的位置
+        this.scrollContent(-this.currentIndex * this.totalWidth)
+        //重新启动定时器
+        this.startTimer()
+      },
     }
 
   }
