@@ -1,7 +1,7 @@
 <template>
   <div id="swiper-container">
     <!-- 轮播图主展示内容 -->
-    <div class="swiper" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd">
+    <div class="swiper" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd" ref="swiper">
       <slot></slot>
     </div>
 
@@ -54,9 +54,9 @@
     mounted() {
       setTimeout(() => {
         //1.当页面创建后，先操作dom生成无限轮播的前后两个slid结点元素
-        this.handleDom()
+        this.handleDom();
         //2.启动定时器
-        this.startTimer()
+        this.startTimer();
       }, 100)
     },
 
@@ -102,13 +102,9 @@
       checkPosition(){
         setTimeout(() => {
           //先停止动画
-          console.log("enter check position..")
           this.swiperStyle.transition = 'transform 0ms'
-          console.log(this.currentIndex)
-          console.log(-this.totalWidth * this.currentIndex)
           //判断位置是否正常
           if(this.currentIndex >= this.slideCount + 1){
-            console.log("aaaaaaaaaa")
             this.currentIndex = 1
             this.setTransform(-this.currentIndex * this.totalWidth)
           }else if(this.currentIndex <= 0){
@@ -116,7 +112,7 @@
             this.setTransform(-this.currentIndex * this.totalWidth)
           }
           // 2.结束移动后的回调
-          this.$emit('transitionEnd', this.currentIndex-1);
+          // this.$emit('transitionEnd', this.currentIndex-1);
 
         }, this.animDuration)
       },
@@ -131,9 +127,9 @@
       },
 
       handleDom(){
-        let swiperEl = document.querySelector('.swiper');
+        // let swiperEl = document.querySelector('.swiper');
+        let swiperEl = this.$refs.swiper;
         let slidesEls = swiperEl.getElementsByClassName('slide');
-
         this.slideCount = slidesEls.length;
 
         if(this.slideCount > 1){
@@ -171,16 +167,13 @@
         //在滑动时计算移动距离
         this.currentX = event.touches[0].pageX
         this.distance = this.currentX - this.startX
-
         //停止过度动画,进行滑动偏移
         // this.swiperStyle.transition = 'transform 0ms'
         this.setTransform(-this.currentIndex * this.totalWidth + this.distance)
-        console.log("distance: " + this.distance)
 
       },
 
       touchEnd(event){
-        console.log("touch end")
         let abs_distance = Math.abs(this.distance)
         //当触点松开时，需要计算当前偏移距离是否大于设定的滚动比例距离，如果是，则滚动吸附
         if(this.distance > 0 && abs_distance > this.totalWidth * this.swipeRatio){

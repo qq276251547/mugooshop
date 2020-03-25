@@ -1,21 +1,18 @@
 <template>
   <div>
-    <h2>我是首页</h2>
-    <swiper>
-      <swiper-item v-for="(banner, index) in banners" :key="index">
-        <a :href="banner.link">
-          <img :src="banner.image" alt="">
-        </a>
-      </swiper-item>
-    </swiper>
+    <nav-bar class="nav-bar"><div slot="nav-center">购物街</div></nav-bar>
+    <home-swiper :banners="banners"/>
   </div>
 </template>
 
 <script>
-  import Swiper from "components/common/swiper/Swiper";
-  import SwiperItem from "components/common/swiper/SwiperItem";
 
-  import {request} from "network/request";
+
+
+  import NavBar from "components/common/navbar/NavBar";
+  import HomeSwiper from "./childConps/HomeSwiper";
+
+  import {getMultiData} from "network/home";
 
   export default {
     name: "Home",
@@ -24,21 +21,34 @@
         banners: []
       }
     },
+
     components: {
-      Swiper,
-      SwiperItem
+      NavBar,
+      HomeSwiper
     },
+
     mounted() {
-      request({
-        method: 'get',
-        url: 'home/multidata'
-      }).then(res => {
-        this.banners = res.data.banner.list
-      })
-    }
+      this.getHomeMultiData()
+    },
+
+    methods: {
+      /**
+       * 网络请求数据方法
+       */
+      getHomeMultiData() {
+        getMultiData().then(res => {
+          this.banners = res.data.banner.list
+        })
+      }
+    },
+
   }
 </script>
 
 <style scoped>
-
+  .nav-bar{
+    background-color: var(--color-tint);
+    color: #fff;
+    font-weight: 700;
+  }
 </style>
