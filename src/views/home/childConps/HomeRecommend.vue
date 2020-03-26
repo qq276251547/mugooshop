@@ -26,8 +26,8 @@
     display: flex;
     font-size: 14px;
     padding: 10px 0 15px;
-    border-bottom: #efefef 3px solid;
-    box-shadow: 0 0 10px rgba(100, 100, 100, .1);
+    border-bottom: #fdfbfc 3px solid;
+    box-shadow: 0 0 10px rgba(100, 100, 100, .08);
   }
 
   .recommend-item {
