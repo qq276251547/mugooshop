@@ -32,6 +32,7 @@
   .goods-item img {
     border-radius: 8px;
     width: 100%;
+    height: 100%;
     box-shadow: 2px 2px 2px rgba(100, 100, 100, 0.5);
   }
 

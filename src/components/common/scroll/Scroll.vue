@@ -19,7 +19,8 @@
     mounted() {
       const el = this.$refs.wrapper;
       this.scroll = new BScroll(el, {
-        probeType: 3
+        probeType: 3,
+        click: true
       })
 
       this.scroll.on('scroll', (position) => {
@@ -31,7 +32,6 @@
 
 <style scoped>
   .wrapper {
-    height: 500px;
-    background-color: red;
+
   }
 </style>

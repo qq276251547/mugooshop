@@ -18,7 +18,7 @@
     right: 0;
     bottom: 0;
     background: #efefef;
-    box-shadow: 0 -1px 10px rgba(100, 100, 100, .3);
+    box-shadow: 0 -1px 15px rgba(100, 100, 100, .3);
   }
 
 

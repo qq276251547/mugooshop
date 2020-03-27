@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="home">
     <nav-bar class="nav-bar"><div slot="nav-center">购物街</div></nav-bar>
-    <scroll>
+    <scroll class="scroller-view">
       <home-swiper :banners="banners"/>
       <home-recommend :recommends="recommends"/>
       <home-popular/>
@@ -106,9 +106,31 @@
 </script>
 
 <style scoped>
+  .home {
+    height: 100vh;
+    position: relative;
+    /*margin-top: 44px;*/
+  }
+
   .nav-bar{
     background-color: var(--color-tint);
     color: #fff;
     font-weight: 700;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 10;
   }
+
+  .scroller-view {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 44px;
+    bottom: 49px;
+    /*margin-top: 44px;*/
+    /*height: calc(100% - 93px);*/
+  }
+
 </style>

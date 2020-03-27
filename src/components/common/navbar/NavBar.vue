@@ -18,7 +18,7 @@
     height: 44px;
     line-height: 44px;
     text-align: center;
-    z-index: 10;
+    /*z-index: 10;*/
   }
 
   .center{
