@@ -1,13 +1,19 @@
 <template>
   <div class="home">
     <nav-bar class="nav-bar"><div slot="nav-center">购物街</div></nav-bar>
-    <scroll class="scroller-view">
+    <scroll class="scroller-view"
+            ref="scrollerView"
+            @scrollPosition="getScrollPosition"
+            :probeType="3">
       <home-swiper :banners="banners"/>
       <home-recommend :recommends="recommends"/>
       <home-popular/>
       <tab-control :tab_titles="tab_titles" @tabIndex="getTabIndex"></tab-control>
       <goods-list :goodsListData="getGoodsListData"></goods-list>
     </scroll>
+    <back-top class="back-top" @click.native="backTop" v-show="backTopShow">
+      <img src="~assets/img/common/top.png" alt="">
+    </back-top>
   </div>
 </template>
 
@@ -20,6 +26,7 @@
   import HomePopular from "./childConps/HomePopular";
   import TabControl from "components/content/tabControl/TabControl";
   import GoodsList from "components/content/goods/GoodsList";
+  import BackTop from "components/content/backtop/BackTop";
 
   import {getMultiData, getGoodsData} from "network/home";
 
@@ -36,12 +43,13 @@
           'new': {page: 1, data: []},
           'sell': {page: 1, data: []}
         },
+        backTopShow: false
       }
     },
     computed: {
       getGoodsListData() {
         return this.goods[this.current_goods_type].data
-      }
+      },
     },
 
     components: {
@@ -52,6 +60,7 @@
       HomePopular,
       TabControl,
       GoodsList,
+      BackTop,
     },
 
     mounted() {
@@ -77,6 +86,14 @@
             break;
         }
         this.getHomeGoodsData(this.current_goods_type)
+      },
+
+      backTop() {
+        this.$refs.scrollerView.scroller.scrollTo(0, 0, 800)
+      },
+
+      getScrollPosition(position) {
+        this.backTopShow = Math.abs(position.y) > document.documentElement.clientHeight * 2;
       },
 
       /**
@@ -108,7 +125,7 @@
 <style scoped>
   .home {
     height: 100vh;
-    position: relative;
+    /*position: relative;*/
     /*margin-top: 44px;*/
   }
 
@@ -133,4 +150,10 @@
     /*height: calc(100% - 93px);*/
   }
 
+  .back-top {
+    position: fixed;
+    bottom: 60px;
+    right: 10px;
+    /*z-index: 10;*/
+  }
 </style>

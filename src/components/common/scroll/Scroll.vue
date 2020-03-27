@@ -11,20 +11,26 @@
 
   export default {
     name: "Scroll",
+    props: {
+      probeType: {
+        type: Number,
+        default: 0
+      }
+    },
     data() {
       return {
-        scroll: {}
+        scroller: {},
       }
     },
     mounted() {
       const el = this.$refs.wrapper;
-      this.scroll = new BScroll(el, {
-        probeType: 3,
+      this.scroller = new BScroll(el, {
+        probeType: this.probeType,
         click: true
       })
 
-      this.scroll.on('scroll', (position) => {
-        console.log(position)
+      this.scroller.on('scroll', (position) => {
+        this.$emit('scrollPosition', position)
       })
     }
   }
