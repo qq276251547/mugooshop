@@ -2,7 +2,7 @@
   <div id="app">
     <router-view></router-view>
     <!-- 底部切换栏 -->
-    <main-tab-bar></main-tab-bar>
+    <main-tab-bar class="main-tab-bar"></main-tab-bar>
   </div>
 </template>
 

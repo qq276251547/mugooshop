@@ -4,7 +4,7 @@
     <scroll class="scroller-view"
             ref="scrollerView"
             @scrollPosition="getScrollPosition"
-            :probeType="3">
+            :probe-type="3">
       <home-swiper :banners="banners"/>
       <home-recommend :recommends="recommends"/>
       <home-popular/>
@@ -39,9 +39,9 @@
         recommends: [],
         tab_titles: ['流行', '新款', '精选'],
         goods: {
-          'pop': {page: 1, data: []},
-          'new': {page: 1, data: []},
-          'sell': {page: 1, data: []}
+          'pop': {page: 0, data: []},
+          'new': {page: 0, data: []},
+          'sell': {page: 0, data: []}
         },
         backTopShow: false
       }
@@ -63,17 +63,24 @@
       BackTop,
     },
 
-    mounted() {
-      this.getHomeMultiData()
+    created() {
+      this.getHomeMultiData();
 
-      this.getHomeGoodsData('pop')
-      this.getHomeGoodsData('new')
-      this.getHomeGoodsData('sell')
+      this.getHomeGoodsData('pop');
+      this.getHomeGoodsData('new');
+      this.getHomeGoodsData('sell');
+    },
+
+    mounted() {
+      const refresh = this.debounce(this.$refs.scrollerView.refresh, 100);
+
+      this.$bus.$on('imageLoadFinish',  () => {
+        refresh()
+      })
     },
 
     methods: {
       getTabIndex(tab_index){
-        console.log(tab_index);
         switch (tab_index) {
           case 0:
             this.current_goods_type = 'pop';
@@ -85,7 +92,6 @@
             this.current_goods_type = 'sell';
             break;
         }
-        this.getHomeGoodsData(this.current_goods_type)
       },
 
       backTop() {
@@ -108,14 +114,24 @@
       },
       //获取某一类型商品的数据，在第一次加载的时候只默认加载第一页数据
       getHomeGoodsData(type) {
-        getGoodsData(type, this.goods[type].page).then(res => {
-          console.log(res);
-
-          this.goods[type].data.push(...res.data.list)
-          this.goods[type].page += 1
+        let page = this.goods[type].page + 1;
+        getGoodsData(type, page).then(res => {
+          this.goods[type].data.push(...res.data.list);
+          this.goods[type].page += 1;
           console.log(this.goods)
         })
+      },
 
+      //防抖函数
+      debounce(func, wait) {
+        let timer = null;
+        return function () {
+          if (timer) clearTimeout(timer);
+          timer = setTimeout( () => {
+            console.log("aa")
+            func.apply(this, ...arguments)
+          }, wait)
+        }
       }
     },
 

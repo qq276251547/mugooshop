@@ -42,7 +42,6 @@
     line-height: 40px;
     /*background-color: #fff;*/
     margin-bottom: 5px;
-    border: 1px solid blue;
   }
 
   .tab-control-item {

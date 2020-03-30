@@ -32,6 +32,11 @@
       this.scroller.on('scroll', (position) => {
         this.$emit('scrollPosition', position)
       })
+    },
+    methods : {
+      refresh(){
+        this.scroller.refresh()
+      }
     }
   }
 </script>
