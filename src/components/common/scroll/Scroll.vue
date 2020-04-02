@@ -15,6 +15,10 @@
       probeType: {
         type: Number,
         default: 0
+      },
+      isPullingUp: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -26,16 +30,30 @@
       const el = this.$refs.wrapper;
       this.scroller = new BScroll(el, {
         probeType: this.probeType,
-        click: true
+        click: true,
+        pullUpLoad: this.isPullingUp
       })
 
-      this.scroller.on('scroll', (position) => {
-        this.$emit('scrollPosition', position)
-      })
+      //滚动监听
+      if (this.probeType === 2 || this.probeType === 3){
+        this.scroller.on('scroll', (position) => {
+          this.$emit('scrollPosition', position)
+        })
+      }
+
+      //上拉加载监听
+      if (this.isPullingUp){
+        this.scroller.on('pullingUp', () => {
+          this.$emit('loadMore')
+        })
+      }
     },
     methods : {
       refresh(){
-        this.scroller.refresh()
+        this.scroller && this.scroller.refresh()
+      },
+      pullingLoadDone(){
+        this.scroller && this.scroller.finishPullUp()
       }
     }
   }

@@ -4,7 +4,8 @@
     <scroll class="scroller-view"
             ref="scrollerView"
             @scrollPosition="getScrollPosition"
-            :probe-type="3">
+            @loadMore ="pullingUpLoadMore"
+            :probe-type="3" :is-pulling-up="true">
       <home-swiper :banners="banners"/>
       <home-recommend :recommends="recommends"/>
       <home-popular/>
@@ -29,6 +30,7 @@
   import BackTop from "components/content/backtop/BackTop";
 
   import {getMultiData, getGoodsData} from "network/home";
+  import {debounce} from "common/utils";
 
   export default {
     name: "Home",
@@ -72,7 +74,7 @@
     },
 
     mounted() {
-      const refresh = this.debounce(this.$refs.scrollerView.refresh, 100);
+      const refresh = debounce(this.$refs.scrollerView.refresh, 100);
 
       this.$bus.$on('imageLoadFinish',  () => {
         refresh()
@@ -122,17 +124,12 @@
         })
       },
 
-      //防抖函数
-      debounce(func, wait) {
-        let timer = null;
-        return function () {
-          if (timer) clearTimeout(timer);
-          timer = setTimeout( () => {
-            console.log("aa")
-            func.apply(this, ...arguments)
-          }, wait)
-        }
+      pullingUpLoadMore() {
+        console.log("上拉加载更多")
+        this.getHomeGoodsData(this.current_goods_type)
+        this.$refs.scrollerView.pullingLoadDone()
       }
+
     },
 
   }
