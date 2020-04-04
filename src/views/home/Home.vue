@@ -1,16 +1,21 @@
 <template>
   <div class="home">
     <nav-bar class="nav-bar"><div slot="nav-center">购物街</div></nav-bar>
+    <tab-control v-show="isCellingTabControl"
+                 :class="{fixedTabControl: isCellingTabControl}"
+                 :tab_titles="tab_titles"
+                 @tabIndex="getTabIndex"
+                 ref="fixedTabControl"/>
     <scroll class="scroller-view"
             ref="scrollerView"
             @scrollPosition="getScrollPosition"
             @loadMore ="pullingUpLoadMore"
             :probe-type="3" :is-pulling-up="true">
-      <home-swiper :banners="banners"/>
+      <home-swiper :banners="banners" @swiperLoadDone="swiperLoadHandle"/>
       <home-recommend :recommends="recommends"/>
       <home-popular/>
-      <tab-control :tab_titles="tab_titles" @tabIndex="getTabIndex"></tab-control>
-      <goods-list :goodsListData="getGoodsListData"></goods-list>
+      <tab-control ref="tabControl" :tab_titles="tab_titles" @tabIndex="getTabIndex"/>
+      <goods-list :goodsListData="getGoodsListData"/>
     </scroll>
     <back-top class="back-top" @click.native="backTop" v-show="backTopShow">
       <img src="~assets/img/common/top.png" alt="">
@@ -40,12 +45,14 @@
         banners: [],
         recommends: [],
         tab_titles: ['流行', '新款', '精选'],
+        tabControlOffsetHeight: 0,
+        isCellingTabControl: false,
         goods: {
           'pop': {page: 0, data: []},
           'new': {page: 0, data: []},
           'sell': {page: 0, data: []}
         },
-        backTopShow: false
+        backTopShow: false,
       }
     },
     computed: {
@@ -67,7 +74,6 @@
 
     created() {
       this.getHomeMultiData();
-
       this.getHomeGoodsData('pop');
       this.getHomeGoodsData('new');
       this.getHomeGoodsData('sell');
@@ -75,10 +81,10 @@
 
     mounted() {
       const refresh = debounce(this.$refs.scrollerView.refresh, 100);
-
       this.$bus.$on('imageLoadFinish',  () => {
         refresh()
       })
+
     },
 
     methods: {
@@ -94,6 +100,12 @@
             this.current_goods_type = 'sell';
             break;
         }
+        this.$refs.fixedTabControl.currentIndex = tab_index;
+        this.$refs.tabControl.currentIndex = tab_index;
+      },
+
+      swiperLoadHandle() {
+        this.tabControlOffsetHeight = this.$refs.tabControl.$el.offsetTop
       },
 
       backTop() {
@@ -102,6 +114,7 @@
 
       getScrollPosition(position) {
         this.backTopShow = Math.abs(position.y) > document.documentElement.clientHeight * 2;
+        this.isCellingTabControl = Math.abs(position.y) > this.tabControlOffsetHeight;
       },
 
       /**
@@ -120,12 +133,13 @@
         getGoodsData(type, page).then(res => {
           this.goods[type].data.push(...res.data.list);
           this.goods[type].page += 1;
-          console.log(this.goods)
+          if (this.$refs.scrollerView) {
+            this.$refs.scrollerView.isPullUp = false;
+          }
         })
       },
 
       pullingUpLoadMore() {
-        console.log("上拉加载更多")
         this.getHomeGoodsData(this.current_goods_type)
         this.$refs.scrollerView.pullingLoadDone()
       }
@@ -146,10 +160,11 @@
     background-color: var(--color-tint);
     color: #fff;
     font-weight: 700;
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
+    position: relative;
+    /*position: fixed;*/
+    /*left: 0;*/
+    /*right: 0;*/
+    /*top: 0;*/
     z-index: 10;
   }
 
@@ -168,5 +183,13 @@
     bottom: 60px;
     right: 10px;
     /*z-index: 10;*/
+  }
+
+  .fixedTabControl {
+    position: relative;
+    z-index: 10;
+    left: 0;
+    right: 0;
+    /*top: 44px;*/
   }
 </style>

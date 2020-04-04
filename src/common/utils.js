@@ -4,7 +4,6 @@ export function debounce(func, wait) {
   return function () {
     if (timer) clearTimeout(timer);
     timer = setTimeout( () => {
-      console.log("call debounce function...")
       func.apply(this, ...arguments)
     }, wait)
   }

@@ -3,6 +3,7 @@ import App from './App.vue'
 
 Vue.config.productionTip = false
 import router from "./router/index"
+import "assets/iconfont/iconfont"
 
 // create vue as eventBus object
 Vue.prototype.$bus = new Vue();
