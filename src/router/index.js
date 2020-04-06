@@ -8,27 +8,53 @@ const Home = () => import('views/home/Home')
 const Category = () => import('views/category/Category')
 const Cart = () => import('views/cart/Cart')
 const Profile = () => import('views/profile/Profile')
+const Detail = () => import('views/detail/Detail')
 
 const routes = [
   {
     path: '/',
+    name: 'root',
     redirect: '/home',
   },
   {
     path: '/home',
-    component: Home
+    name: 'home',
+    component: Home,
+    meta: {
+      showTab: true
+    }
   },
   {
     path: '/category',
-    component: Category
+    name: 'category',
+    component: Category,
+    meta: {
+      showTab: true
+    }
   },
   {
     path: '/cart',
-    component: Cart
+    name: 'cart',
+    component: Cart,
+    meta: {
+      showTab: true
+    }
   },
   {
     path: '/profile',
-    component: Profile
+    name: 'profile',
+    component: Profile,
+    meta: {
+      showTab: true
+    }
+  },
+  {
+    path: '/detail',
+    name: 'detail',
+    component: Detail,
+    meta: {
+      showTab: false
+    }
   },
 ]
 
@@ -36,6 +62,5 @@ const router = new VueRouter({
   routes,
   mode: "history"
 })
-
 
 export default router

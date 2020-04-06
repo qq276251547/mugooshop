@@ -1,8 +1,10 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <keep-alive exclude="Detail">
+      <router-view></router-view>
+    </keep-alive>
     <!-- 底部切换栏 -->
-    <main-tab-bar class="main-tab-bar"></main-tab-bar>
+    <main-tab-bar v-if="$route.meta.showTab" class="main-tab-bar"></main-tab-bar>
   </div>
 </template>
 

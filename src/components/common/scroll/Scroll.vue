@@ -71,8 +71,14 @@
       },
       pullingLoadDone(){
         this.scroller && this.scroller.finishPullUp()
+      },
+      scrollTo(x, y, duration=300){
+        this.scroller && this.scroller.scrollTo(x, y, duration)
+      },
+      getCurrentScrollY(){
+        return this.scroller ? this.scroller.y : 0
       }
-    }
+  }
   }
 </script>
 

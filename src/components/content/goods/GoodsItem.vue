@@ -1,5 +1,5 @@
 <template>
-  <div class="goods-item">
+  <div class="goods-item" @click="goodClick(goodsData.iid)">
     <img :src="goodsData.show.img" alt="" @load="imgLoad">
     <div class="goods-info">
       <p>{{goodsData.title}}</p>
@@ -21,6 +21,16 @@
     methods: {
       imgLoad(){
         this.$bus.$emit('imageLoadFinish')
+      },
+
+      goodClick(goodId){
+        console.log(goodId)
+        this.$router.push({
+          path: 'detail',
+          query: {
+            iid: goodId
+          }
+        })
       }
     }
   }

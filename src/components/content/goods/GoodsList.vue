@@ -2,8 +2,7 @@
   <div class="goods-list">
     <goods-item v-for="(goods, index) in goodsListData"
                 :goods-data="goods"
-                :key="index"
-    />
+                :key="index"/>
   </div>
 </template>
 
@@ -20,7 +19,7 @@
         type: Array,
         default: []
       }
-    }
+    },
   }
 </script>
 

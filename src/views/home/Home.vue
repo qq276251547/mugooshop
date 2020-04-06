@@ -45,7 +45,7 @@
         banners: [],
         recommends: [],
         tab_titles: ['流行', '新款', '精选'],
-        tabControlOffsetHeight: 0,
+        tabControlOffsetTpp: 0,
         isCellingTabControl: false,
         goods: {
           'pop': {page: 0, data: []},
@@ -53,6 +53,7 @@
           'sell': {page: 0, data: []}
         },
         backTopShow: false,
+        scrollLeaveY: 0,
       }
     },
     computed: {
@@ -79,6 +80,18 @@
       this.getHomeGoodsData('sell');
     },
 
+    activated() {
+      //重新进入Home时，先刷新整个better-scroll，然后再直接滚动到上次离开所在的位置
+      this.$refs.scrollerView.refresh();
+      this.$refs.scrollerView.scrollTo(0, this.scrollLeaveY, 0);
+
+    },
+
+    deactivated() {
+      //离开Home之前，记录当前滚动所在的距离
+      this.scrollLeaveY = this.$refs.scrollerView.getCurrentScrollY();
+    },
+
     mounted() {
       const refresh = debounce(this.$refs.scrollerView.refresh, 100);
       this.$bus.$on('imageLoadFinish',  () => {
@@ -102,19 +115,20 @@
         }
         this.$refs.fixedTabControl.currentIndex = tab_index;
         this.$refs.tabControl.currentIndex = tab_index;
+        this.$refs.scrollerView.scrollTo(0, -this.tabControlOffsetTpp, 800)
       },
 
       swiperLoadHandle() {
-        this.tabControlOffsetHeight = this.$refs.tabControl.$el.offsetTop
+        this.tabControlOffsetTpp = this.$refs.tabControl.$el.offsetTop
       },
 
       backTop() {
-        this.$refs.scrollerView.scroller.scrollTo(0, 0, 800)
+        this.$refs.scrollerView.scrollTo(0, 0, 800)
       },
 
       getScrollPosition(position) {
         this.backTopShow = Math.abs(position.y) > document.documentElement.clientHeight * 2;
-        this.isCellingTabControl = Math.abs(position.y) > this.tabControlOffsetHeight;
+        this.isCellingTabControl = Math.abs(position.y) > this.tabControlOffsetTpp;
       },
 
       /**
